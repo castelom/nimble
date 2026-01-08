@@ -1,16 +1,28 @@
-﻿namespace StringCalculator.Core
+﻿using System;
+
+namespace StringCalculator.Core
 {
     public class Calculator
     {
-        private const char DELIMITER = ',';
+        private static readonly char[] defaultDelimiters = { ',', '\n' };
+        private const string CUSTOM_DELIMITER_PREFIX = "//";
 
         public int Add(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return 0;
 
-            string sanitizeInput = input.Replace('\n', DELIMITER);
-            var numbers = sanitizeInput.Split(DELIMITER);
+            IList<char> delimiters = new List<char>(defaultDelimiters);
+
+            //Custom delimiter
+            if (input.StartsWith(CUSTOM_DELIMITER_PREFIX)) 
+            {
+                char customDelimiter = input[2];
+                input = input.Substring(4); //Remove the custom delimiter definition
+                delimiters.Add(customDelimiter);
+            }
+
+            string[] numbers = input.Split(delimiters.ToArray());
 
             IList<int> negativeNumbers = new List<int>();
 
