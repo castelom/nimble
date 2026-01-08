@@ -57,6 +57,9 @@ namespace StringCalculator.Tests
         [InlineData("//*\n1*2,3\n4", 10)]
         [InlineData("//$\n1,2$3\n4", 10)]
         [InlineData("//&\n1&2&3&4", 10)]
+        [InlineData("//[***]\n1***2***3***4", 10)]
+        [InlineData("//[***]\n1***2,3\n4", 10)]
+
         public void Add_WithCustomDelimiters_ShouldReturnsSum(string expression, int expected)
         {
             // Act
