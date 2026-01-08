@@ -12,15 +12,28 @@
             string sanitizeInput = input.Replace('\n', DELIMITER);
             var numbers = sanitizeInput.Split(DELIMITER);
 
+            IList<int> negativeNumbers = new List<int>();
+
             int sum = 0;
 
             foreach (var number in numbers)
             {
                 // If TryParse fails, we simply skip that value
-                if (int.TryParse(number, out int intNumber))
+                if (!int.TryParse(number, out int intNumber))
+                continue;
+
+                if (intNumber < 0)
                 {
-                    sum += intNumber;
-                }        
+                    negativeNumbers.Add(intNumber);
+                    continue;
+                }
+
+                sum += intNumber;
+            }
+
+            if(negativeNumbers.Any())
+            {
+                throw new Exceptions.NegativeNumbersNotAllowedException(negativeNumbers);
             }
 
             return sum;
