@@ -1,8 +1,28 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using StringCalculator.Core;
+using System.Text;
 
-Console.WriteLine("Enter expression:");
-var input = Console.ReadLine();
+Console.WriteLine("Enter expression (press ENTER twice to finish):");
+
+var inputBuilder = new StringBuilder();
+
+while (true)
+{
+    var line = Console.ReadLine();
+
+    if (string.IsNullOrEmpty(line))
+        break;
+
+    inputBuilder.AppendLine(line);
+}
+
+//Sanitize input
+var input = inputBuilder
+    .ToString()
+    .Replace("\r\n","\n") // normalize Windows line endings
+    .TrimEnd('\n') //remove trailing newline
+    .Replace(" ",string.Empty); //remove spaces
+
 
 var calculator = new Calculator();
 

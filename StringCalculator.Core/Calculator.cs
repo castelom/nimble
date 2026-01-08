@@ -3,14 +3,14 @@
     public class Calculator
     {
         private const char DELIMITER = ',';
-        private const int MAXNUMBERALLOWED = 2;
 
         public int Add(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return 0;
 
-            var numbers = input.Split(DELIMITER);
+            string sanitizeInput = input.Replace('\n', DELIMITER);
+            var numbers = sanitizeInput.Split(DELIMITER);
 
             int sum = 0;
 
