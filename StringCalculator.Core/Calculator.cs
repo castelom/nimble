@@ -20,13 +20,17 @@
             {
                 // If TryParse fails, we simply skip that value
                 if (!int.TryParse(number, out int intNumber))
-                continue;
+                    continue;
 
                 if (intNumber < 0)
                 {
                     negativeNumbers.Add(intNumber);
                     continue;
                 }
+
+                //Skip numbers greater than 1000
+                if (intNumber > 1000)
+                    continue;
 
                 sum += intNumber;
             }
