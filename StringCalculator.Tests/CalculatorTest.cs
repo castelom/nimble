@@ -1,5 +1,4 @@
 using StringCalculator.Core;
-using StringCalculator.Core.Exceptions;
 
 namespace StringCalculator.Tests
 {
@@ -18,6 +17,8 @@ namespace StringCalculator.Tests
         [InlineData("1,5000", 5001)]
         [InlineData("4,-3", 1)]
         [InlineData("-4,3", -1)]
+        [InlineData("1,2,3,4,5,6,7,8,9,10,11,12", 78)]
+        [InlineData("1,2,3,4,5,6,7,8,9,10,11,12,abc", 78)]
 
         public void Add_Expression_ShouldParseAndSumValidNumbers(string expression, int expected)
         {
@@ -26,14 +27,6 @@ namespace StringCalculator.Tests
 
             //Assert
             Assert.Equal(expected, result);
-        }
-
-        [Fact]
-
-        public void Add_MoreThanTwoNumbers_ShouldThrowsException()
-        {
-            //Assert
-            Assert.Throws<MaxNumberExceededExeception>(() => _sut.Add("1,2,3"));
         }
     }
 }

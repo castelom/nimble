@@ -1,6 +1,4 @@
-﻿using StringCalculator.Core.Exceptions;
-
-namespace StringCalculator.Core
+﻿namespace StringCalculator.Core
 {
     public class Calculator
     {
@@ -13,9 +11,6 @@ namespace StringCalculator.Core
                 return 0;
 
             var numbers = input.Split(DELIMITER);
-
-            if (numbers.Length > MAXNUMBERALLOWED)
-                throw new MaxNumberExceededExeception();
 
             int sum = 0;
 
