@@ -19,9 +19,9 @@ while (true)
 //Sanitize input
 var input = inputBuilder
     .ToString()
-    .Replace("\r\n","\n") // normalize Windows line endings
-    .TrimEnd('\n') //remove trailing newline
-    .Replace(" ",string.Empty); //remove spaces
+    .Replace("\r\n", "\n") // normalize Windows line endings
+    .TrimEnd('\n'); //remove trailing newline
+    
 
 
 var calculator = new Calculator();

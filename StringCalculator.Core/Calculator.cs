@@ -1,4 +1,6 @@
-﻿using System;
+﻿using StringCalculator.Core.Exceptions;
+using System;
+using System.ComponentModel;
 
 namespace StringCalculator.Core
 {
@@ -12,7 +14,7 @@ namespace StringCalculator.Core
             if (string.IsNullOrWhiteSpace(input))
                 return 0;
 
-            IList<string> delimiters = new List<string>(defaultDelimiters);
+            IList<string> delimiters = [.. defaultDelimiters];
 
             //Custom delimiter
             if (input.StartsWith(CUSTOM_DELIMITER_PREFIX)) 
@@ -58,30 +60,61 @@ namespace StringCalculator.Core
         /// Extracts a custom delimiter definition from the input expression
         /// and updates the list of delimiters while returning the remaining numeric expression.
         ///
-        /// Supports custom delimiters of any length using the format:
-        /// //[{delimiter}]\n{numbers}
         /// 
         /// Supports custom delimiters of 1 char using the format:
-        /// //{delimiter}\n{numbers}
+        /// //{delimiter}\n{expression}
+        /// 
+        /// Supports custom delimiters of any length using the format:
+        /// [{delimiter}]\n{expression} 
         ///
+        /// Supports multiple custom delimiters of any length using the format:
+        /// //[{delimiter}][{delimiter}]...[{delimiter}]\n{expression}
         /// </summary>
         private static string ExtractCustomDelimiter(string input, IList<string> delimiters)
         {
-            var delimiterEndIndex = input.IndexOf("]\n", StringComparison.Ordinal);
-            string expressionWithoutDelimiter = string.Empty;
+            var delimiterEndIndex = input.IndexOf("\n", StringComparison.Ordinal);
+            string expressionWithoutDelimiter = input;
             string delimiter = string.Empty;
 
             if (delimiterEndIndex > 0)
             {
-                delimiter = input.Substring(3, delimiterEndIndex - 3);
-                delimiters.Add(delimiter);
-                expressionWithoutDelimiter = input.Substring(delimiterEndIndex + 2);
-            }
-            else
-            {
-                delimiter = input[2].ToString();
-                delimiters.Add(delimiter);
-                expressionWithoutDelimiter = input.Substring(4);
+                expressionWithoutDelimiter = input.Substring(delimiterEndIndex + 1);
+                var delimiterSection = input.Substring(2, delimiterEndIndex -2);
+
+                int index = 0;
+
+                if(!delimiterSection.StartsWith("[") || !delimiterSection.EndsWith("]"))
+                {
+                    if (string.IsNullOrEmpty(delimiterSection) || delimiterSection.Contains('[') || delimiterSection.Contains(']'))
+                        throw new FormatException(ErrorMessages.InvalidDelimiter);
+                    delimiters.Add(delimiterSection);
+                }
+
+                else
+                {
+                    while (index < delimiterSection.Length)
+                    {
+                        if (delimiterSection[index] == '[')
+                        {
+                            int closingBracketIndex = delimiterSection.IndexOf(']', index);
+                            if (closingBracketIndex == -1)
+                                break;
+
+                            delimiter = delimiterSection.Substring(index + 1, closingBracketIndex - index - 1);
+
+                            if (string.IsNullOrEmpty(delimiter) || delimiter.Contains('[') || delimiter.Contains(']'))
+                                throw new FormatException(ErrorMessages.InvalidDelimiter);
+
+                            delimiters.Add(delimiter);
+
+                            index = closingBracketIndex + 1;
+                        }
+                        else
+                        {
+                            index++;
+                        }
+                    }
+                }
             }
 
             return expressionWithoutDelimiter;

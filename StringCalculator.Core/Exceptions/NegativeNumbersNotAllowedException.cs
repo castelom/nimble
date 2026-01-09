@@ -3,7 +3,7 @@
     public class NegativeNumbersNotAllowedException : Exception
     {
         public NegativeNumbersNotAllowedException(IEnumerable<int> negatives)
-            : base($"Negatives numbers are not allowed: {string.Join(",", negatives)}")
+            : base($"{ErrorMessages.NegativeNumbersNotAllowed} {string.Join(",", negatives)}")
         {
         }
     }

@@ -53,6 +53,7 @@ namespace StringCalculator.Tests
         }
 
         [Theory]
+        [InlineData("// \n1 2 3 4", 10)]
         [InlineData("//*\n1*2*3*4", 10)]
         [InlineData("//*\n1*2,3\n4", 10)]
         [InlineData("//$\n1,2$3\n4", 10)]
@@ -61,6 +62,21 @@ namespace StringCalculator.Tests
         [InlineData("//[***]\n1***2,3\n4", 10)]
 
         public void Add_WithCustomDelimiters_ShouldReturnsSum(string expression, int expected)
+        {
+            // Act
+            var result = _sut.Add(expression);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("//[ ][!!]\n22 hh 33!!44", 99)]
+        [InlineData("//[*][!!]\n22*hh*33!!44", 99)]
+        [InlineData("//[*][!!][r9r]\n11r9r22*hh*33!!44", 110)]
+        [InlineData("//[*][!!][r9r][abc]\n11r9r22*hh*33!!44abc40", 150)]
+
+        public void Add_WithMultiplesCustomDelimiters_ShouldReturnsSum(string expression, int expected)
         {
             // Act
             var result = _sut.Add(expression);
@@ -86,11 +102,30 @@ namespace StringCalculator.Tests
                 var result = _sut.Add(expression);
             });
 
+            var expectedMessage = $"{ErrorMessages.NegativeNumbersNotAllowed} {string.Join(",", expectedNegatives)}";
+
             //Assert
-            foreach (var negative in expectedNegatives)
+            Assert.Equal(expectedMessage, exception.Message);
+        }
+
+        [Theory]
+        [InlineData("//[\n1*2*3*4")]
+        [InlineData("//]\n1*2*3*4")]
+        [InlineData("//[]][[]\n22*hh*33!!44")]
+        [InlineData("//[]]][[]\n22*hh*33!!44")]
+
+        public void Add_InvalidDelimiters_ShouldThrowsFormatException(string expression)
+        {
+            
+            var exception = Assert.Throws<FormatException>(() =>
             {
-                Assert.Contains(negative.ToString(), exception.Message);
-            }
+                //Act
+                var result = _sut.Add(expression);
+            });
+
+            //Assert
+            Assert.Equal(ErrorMessages.InvalidDelimiter, exception.Message);
+            
         }
     }
 }
